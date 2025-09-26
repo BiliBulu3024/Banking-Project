@@ -11,6 +11,9 @@ import jakarta.persistence.*;
         @GeneratedValue(strategy = GenerationType.IDENTITY) // khóa chính auto tăng
         private Long id;
 
+        @Column(nullable = false)
+        private String role;  // "ADMIN" hoặc "USER"
+
         @Column(nullable = false, unique = true)
         private String username;
 

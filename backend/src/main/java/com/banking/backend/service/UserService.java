@@ -10,4 +10,6 @@ public interface UserService {
     List<User> getAllUsers();
     User getUserByEmail(String email);
     void deleteUser(Long id);
+    boolean checkPassword(String rawPassword, String encodedPassword);
+
 }

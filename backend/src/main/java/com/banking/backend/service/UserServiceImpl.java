@@ -6,6 +6,7 @@ import com.banking.backend.repository.UserRepository;
 import com.banking.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;
 
@@ -15,10 +16,24 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     @Override
     public User createUser(User user) {
-        // TODO: kiểm tra trùng email, mã hóa password, ...
+        if (userRepository.findByEmail(user.getEmail()) != null) {
+            throw new RuntimeException("Email already exists!");
+        }
+        if (userRepository.findByUsername(user.getUsername()) != null) {
+            throw new RuntimeException("Username already exists!");
+        }
+
+        // Mã hóa mật khẩu trước khi lưu
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
+    }
+    @Override
+    public boolean checkPassword(String rawPassword, String encodedPassword) {
+        return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 
     @Override

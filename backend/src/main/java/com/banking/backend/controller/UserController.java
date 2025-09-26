@@ -4,6 +4,7 @@ package com.banking.backend.controller;
 import com.banking.backend.entity.User;
 import com.banking.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,9 +18,20 @@ public class UserController {
 
     // Đăng ký tài khoản (Create Account)
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody User user) {
-        User newUser = userService.createUser(user);
-        return ResponseEntity.ok(newUser);
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
+        try {
+            // Nếu role không có, mặc định là USER
+            if (user.getRole() == null || user.getRole().isEmpty()) {
+                user.setRole("USER");
+            }
+            User newUser = userService.createUser(user);
+            return ResponseEntity.ok(newUser);
+        } catch (RuntimeException e) {
+            // Trả về JSON gọn gàng khi gặp lỗi
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("{\"error\": \"" + e.getMessage() + "\"}");
+        }
     }
 
     // Lấy tất cả user
@@ -43,12 +55,20 @@ public class UserController {
 
     // Đăng nhập (Login)
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody User user) {
-        User existingUser = userService.getUserByEmail(user.getEmail());
-        if (existingUser != null && existingUser.getPassword().equals(user.getPassword())) {
-            return ResponseEntity.ok("Login successful");
-        } else {
-            return ResponseEntity.status(401).body("Invalid email or password");
+    public ResponseEntity<?> login(@RequestBody User user) {
+        try {
+            User existingUser = userService.getUserByEmail(user.getEmail());
+            if (existingUser != null &&
+                    userService.checkPassword(user.getPassword(), existingUser.getPassword())) {
+
+                return ResponseEntity.ok("{\"message\": \"Login successful\", \"role\": \"" + existingUser.getRole() + "\"}");
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("{\"error\": \"Invalid email or password\"}");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"error\": \"Something went wrong\"}");
         }
     }
 }
