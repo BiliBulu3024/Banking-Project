@@ -11,5 +11,5 @@ public interface UserService {
     User getUserByEmail(String email);
     void deleteUser(Long id);
     boolean checkPassword(String rawPassword, String encodedPassword);
-
+    User updateUser(Long id, User updatedUser);
 }
