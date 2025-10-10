@@ -42,13 +42,7 @@ public class UserServiceImpl implements UserService {
     public boolean checkPassword(String rawPassword, String encodedPassword) {
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
-
-    @Override
-    public User getUserById(Long id) {
-
-        return userRepository.findById(id).orElse(null);
-    }
-
+    
     @Override
     public List<User> getAllUsers() {
 
