@@ -4,7 +4,9 @@ import com.banking.backend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-    @Repository
+import java.util.Optional;
+
+@Repository
     public interface UserRepository extends JpaRepository<User, Long> {
 
         // Tìm user bằng email
@@ -12,4 +14,6 @@ import org.springframework.stereotype.Repository;
 
         // Tìm user bằng username
         User findByUsername(String username);
+        Optional<User> findByUsernameOrEmail(String username, String email);
+
     }

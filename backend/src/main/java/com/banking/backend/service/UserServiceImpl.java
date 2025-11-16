@@ -1,25 +1,37 @@
 package com.banking.backend.service;
 
-
+import com.banking.backend.entity.Account;
 import com.banking.backend.entity.User;
+import com.banking.backend.repository.AccountRepository;
 import com.banking.backend.repository.UserRepository;
-import com.banking.backend.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    public UserServiceImpl(UserRepository userRepository,
+                           AccountRepository accountRepository,
+                           BCryptPasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.accountRepository = accountRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @Override
+    public boolean checkPassword(String rawPassword, String encodedPassword) {
+        return passwordEncoder.matches(rawPassword, encodedPassword);
+    }
 
     @Override
     public User createUser(User user) {
+        // ✅ Kiểm tra trùng email / username
         if (userRepository.findByEmail(user.getEmail()) != null) {
             throw new RuntimeException("Email already exists!");
         }
@@ -27,9 +39,28 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Username already exists!");
         }
 
-        // Mã hóa mật khẩu trước khi lưu
+        // ✅ Gán role mặc định nếu chưa có
+        if (user.getRole() == null || user.getRole().isEmpty()) {
+            user.setRole("USER");
+        }
+
+        // ✅ Mã hóa mật khẩu trước khi lưu
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+
+        // ✅ Bước 1: Lưu user vào database
+        User savedUser = userRepository.save(user);
+
+        // ✅ Bước 2: Tạo account mặc định cho user này
+        Account account = new Account();
+        account.setUser(savedUser);
+        account.setAccountNumber("ACC" + System.currentTimeMillis()); // số tài khoản duy nhất
+        account.setBalance(0.0);
+        accountRepository.save(account);
+
+        System.out.println("💳 Created account for user: " + savedUser.getUsername()
+                + " | Account Number: " + account.getAccountNumber());
+
+        return savedUser;
     }
 
     @Override
@@ -39,19 +70,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean checkPassword(String rawPassword, String encodedPassword) {
-        return passwordEncoder.matches(rawPassword, encodedPassword);
-    }
-
-    @Override
     public List<User> getAllUsers() {
-
         return userRepository.findAll();
     }
 
     @Override
     public User getUserByEmail(String email) {
-
         return userRepository.findByEmail(email);
     }
 
@@ -67,20 +91,18 @@ public class UserServiceImpl implements UserService {
     public User updateUser(Long id, User updatedUser) {
         User existingUser = getUserById(id);
 
-        if (updatedUser.getUsername() != null) {
+        if (updatedUser.getUsername() != null)
             existingUser.setUsername(updatedUser.getUsername());
-        }
-        if (updatedUser.getEmail() != null) {
+
+        if (updatedUser.getEmail() != null)
             existingUser.setEmail(updatedUser.getEmail());
-        }
-        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty())
             existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
-        }
-        if (updatedUser.getRole() != null) {
+
+        if (updatedUser.getRole() != null)
             existingUser.setRole(updatedUser.getRole());
-        }
 
         return userRepository.save(existingUser);
     }
-
 }

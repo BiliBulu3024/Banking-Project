@@ -1,75 +1,81 @@
 package com.banking.backend.controller;
 
-
+import com.banking.backend.entity.Account;
 import com.banking.backend.entity.User;
+import com.banking.backend.security.JwtUtil;
 import com.banking.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
+import com.banking.backend.repository.AccountRepository;
 
 @RestController
-@RequestMapping("/api/users") // endpoint chính
+@RequestMapping("/api/users")
 public class UserController {
-    @Autowired
-    private UserService userService;
 
-    // Đăng ký tài khoản (Create Account)
+    private final UserService userService;
+    private final AccountRepository accountRepository;
+
+    // ✅ Constructor-based injection (chuẩn FYP)
+    public UserController(UserService userService, AccountRepository accountRepository) {
+        this.userService = userService;
+        this.accountRepository = accountRepository;
+    }
+
+    /** 🧾 Register User + Auto Create Account */
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody User user) {
+    public ResponseEntity<?> register(@RequestBody Map<String, String> body) {
+        String username = body.get("username");
+        String email = body.get("email");
+        String password = body.get("password");
+
         try {
-            // Nếu role không có, mặc định là USER
-            if (user.getRole() == null || user.getRole().isEmpty()) {
-                user.setRole("USER");
-            }
-            User newUser = userService.createUser(user);
-            return ResponseEntity.ok(newUser);
+            // ✅ Gọi service tạo user (đã bao gồm tạo account)
+            User newUser = userService.createUser(
+                    new User(null, username, email, password, "USER")
+            );
+
+            // ✅ Lấy account của user mới
+            Account account = accountRepository.findByUser(newUser)
+                    .orElseThrow(() -> new RuntimeException("Account not found for new user"));
+
+            // ✅ Trả về response đẹp, chuẩn format
+            return ResponseEntity.ok(Map.of(
+                    "message", "User registered successfully",
+                    "username", newUser.getUsername(),
+                    "email", newUser.getEmail(),
+                    "role", newUser.getRole(),
+                    "accountNumber", account.getAccountNumber(),
+                    "balance", account.getBalance()
+            ));
+
         } catch (RuntimeException e) {
-            // Trả về JSON gọn gàng khi gặp lỗi
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body("{\"error\": \"" + e.getMessage() + "\"}");
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", e.getMessage()
+            ));
         }
     }
 
-    // Lấy tất cả user
+    // === 2. Get All Users ===
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    // Lấy user theo ID
+    // === 3. Get User by ID ===
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
-    // Xóa user theo ID
+    // === 4. Delete User ===
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Map<String, String>> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
-        return ResponseEntity.ok("User deleted successfully");
-    }
-
-    // Đăng nhập (Login)
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User user) {
-        try {
-            User existingUser = userService.getUserByEmail(user.getEmail());
-            if (existingUser != null &&
-                    userService.checkPassword(user.getPassword(), existingUser.getPassword())) {
-
-                return ResponseEntity.ok("{\"message\": \"Login successful\", \"role\": \"" + existingUser.getRole() + "\"}");
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body("{\"error\": \"Invalid email or password\"}");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("{\"error\": \"Something went wrong\"}");
-        }
+        return ResponseEntity.ok(Map.of("message", "User deleted successfully"));
     }
 
 
