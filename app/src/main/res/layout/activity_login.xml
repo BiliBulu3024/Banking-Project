@@ -10,6 +10,9 @@
     android:background="@drawable/background"
     tools:context=".MainActivity">
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@style/CenteredProgressBar" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:layout_width="250dp"
@@ -58,7 +61,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <Button
-            android:id="@+id/button_createnewaccount"
+            android:id="@+id/button_create_new_account"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Create New Account"

@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -13,19 +15,35 @@
         android:theme="@style/Theme.BVBankingApp"
         tools:targetApi="31">
         <activity
-            android:name=".CreateAccount"
+            android:name=".activities.TransferActivity"
             android:exported="false" />
+        <activity
+            android:name=".activities.WithdrawActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.DepositActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.TransactionHistoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.CreateAccountActivity"
+            android:exported="false" />
+
         <activity
             android:name=".AdminDashboard"
             android:exported="false" />
         <activity
-            android:name=".DashboardActivity"
+            android:name=".activities.DashboardActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.LoginActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="false" />
-        <activity
-            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

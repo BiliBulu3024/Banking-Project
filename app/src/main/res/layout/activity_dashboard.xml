@@ -1,25 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/main"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="24dp">
+    android:background="#FFFFFF">
 
-    <TextView
-        android:id="@+id/tvBalance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Số dư: 0 VND"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="20dp"/>
+    <!-- 🔹 Top AppBar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topAppBar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:backgroundTint="#6200EE"
+        android:title="Dashboard"
+        android:titleTextColor="@android:color/white"
+        app:menu="@menu/menu_dashboard"
+        android:elevation="4dp" />
 
-    <Button
-        android:id="@+id/btnTransactionHistory"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Xem lịch sử giao dịch" />
+    <!-- 🔹 Nội dung chính -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
 
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal">
+
+            <!-- 🔹 Tiêu đề -->
+            <TextView
+                android:id="@+id/tvWelcome"
+                android:text="Xin chào!"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#212121"
+                android:layout_marginBottom="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <!-- 🔹 Thẻ thông tin tài khoản -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:background="@drawable/bg_card_white"
+                android:elevation="3dp"
+                android:layout_marginBottom="24dp"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    android:id="@+id/tvAccountNumber"
+                    android:text="Account: 123456789"
+                    android:textSize="16sp"
+                    android:textColor="#444444"
+                    android:layout_marginBottom="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tvBalance"
+                    android:text="Balance: ₫ 0.00"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="#2E7D32"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="24dp">
+
+                <!-- 🔘 Xem báo cáo -->
+                <Button
+                    android:id="@+id/btnViewReport"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="📊 Báo cáo"
+                    android:textAllCaps="false"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white"
+                    android:backgroundTint="#6200EE"
+                    android:layout_marginEnd="6dp" />
+
+                <!-- 🔘 Nạp tiền -->
+                <Button
+                    android:id="@+id/btnDeposit"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Nạp tiền"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginEnd="6dp" />
+
+                <!-- 🔘 Chuyển tiền -->
+                <Button
+                    android:id="@+id/btnTransfer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Chuyển tiền"
+                    android:layout_marginStart="6dp" />
+
+            </LinearLayout>
+
+            <!-- =============================
+                 📉 LINE CHART – ẩn mặc định
+                 ============================= -->
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/lineChart"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:visibility="gone"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- =============================
+                 🥧 PIE CHART – ẩn mặc định
+                 ============================= -->
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/pieChart"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:visibility="gone"
+                android:layout_marginBottom="32dp"/>
+
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>
