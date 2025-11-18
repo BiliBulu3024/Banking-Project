@@ -36,7 +36,7 @@ public class DashboardActivity extends BaseActivity {
 
     private MaterialToolbar topAppBar;
     private TextView tvWelcome, tvAccountNumber, tvBalance;
-    private Button btnViewReport, btnDeposit, btnTransfer;
+    private Button btnViewReport, btnDeposit, btnTransfer, btnWithdraw;
     private LineChart lineChart;
     private PieChart pieChart;
 
@@ -58,6 +58,7 @@ public class DashboardActivity extends BaseActivity {
         pieChart = findViewById(R.id.pieChart);
         btnDeposit = findViewById(R.id.btnDeposit);
         btnTransfer = findViewById(R.id.btnTransfer);
+        btnWithdraw = findViewById(R.id.btnWithdraw);
         // 🔹 Setup Menu
         setupMenu(topAppBar);
 
@@ -80,6 +81,10 @@ public class DashboardActivity extends BaseActivity {
 
         btnTransfer.setOnClickListener(v -> {
             startActivity(new Intent(this, TransferActivity.class));
+        });
+
+        btnWithdraw.setOnClickListener(v -> {
+            startActivity(new Intent(this, WithdrawActivity.class ));
         });
 
     }

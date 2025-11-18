@@ -108,6 +108,15 @@
                     android:text="Chuyển tiền"
                     android:layout_marginStart="6dp" />
 
+                <!-- 🔘 Rut tiền -->
+                <Button
+                    android:id="@+id/btnWithdraw"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Rút tiền"
+                    android:layout_marginStart="6dp" />
+
             </LinearLayout>
 
             <!-- =============================
